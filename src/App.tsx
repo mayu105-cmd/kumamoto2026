@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
+import OfflineBanner from './components/layout/OfflineBanner';
 import { RegistrationForm } from './components/evacuee/RegistrationForm';
 import { DigitalPass } from './components/evacuee/DigitalPass';
 import { ReissuePassModal } from './components/evacuee/ReissuePassModal';
@@ -22,6 +23,7 @@ import {
   deleteEvacueeRecord, getSavedMyEvacueeId, setSavedMyEvacueeId, getSavedAdminUser,
   setSavedAdminUser, resetToInitialMockData
 } from './utils/storage';
+import { OfflineAction } from './utils/offlineQueue';
 
 export const App: React.FC = () => {
   // レコード状態
@@ -90,7 +92,20 @@ export const App: React.FC = () => {
     };
 
     window.addEventListener('evacuee-data-changed', handleDataChanged);
-    return () => window.removeEventListener('evacuee-data-changed', handleDataChanged);
+    // オフラインキューのフラッシュハンドラー
+  const handleFlushOfflineQueue = (actions: OfflineAction[]) => {
+    // ローカルストレージはすでに最新なので再ロードのみ
+    // （addEvacueeRecord/updateEvacueeRecord/deleteEvacueeRecord がオフライン中も localStorage に保存済み）
+    console.info(`[OfflineSync] ${actions.length}件のオフライン操作を反映`, actions);
+    const latest = loadEvacueeRecords();
+    setRecords(latest);
+    if (myRecord) {
+      const updatedMy = latest.find(r => r.id === myRecord.id);
+      if (updatedMy) setMyRecord(updatedMy);
+    }
+  };
+
+  return () => window.removeEventListener('evacuee-data-changed', handleDataChanged);
   }, [myRecord]);
 
   // タブ選択時のセキュリティガード
@@ -209,6 +224,19 @@ export const App: React.FC = () => {
     ? records.find(r => r.facilityId === selectedFacility && r.slotNumber === selectedSlotNumber) || null
     : null;
 
+  // オフラインキューのフラッシュハンドラー
+  const handleFlushOfflineQueue = (actions: OfflineAction[]) => {
+    // ローカルストレージはすでに最新なので再ロードのみ
+    // （addEvacueeRecord/updateEvacueeRecord/deleteEvacueeRecord がオフライン中も localStorage に保存済み）
+    console.info(`[OfflineSync] ${actions.length}件のオフライン操作を反映`, actions);
+    const latest = loadEvacueeRecords();
+    setRecords(latest);
+    if (myRecord) {
+      const updatedMy = latest.find(r => r.id === myRecord.id);
+      if (updatedMy) setMyRecord(updatedMy);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 text-slate-800">
       {/* ナビゲーションバー */}
@@ -223,6 +251,9 @@ export const App: React.FC = () => {
         selectedFacility={selectedFacility}
         onSelectFacility={setSelectedFacility}
       />
+
+      {/* オフライン状態バナー */}
+      <OfflineBanner onFlushQueue={handleFlushOfflineQueue} />
 
       {/* メインビューエリア */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">

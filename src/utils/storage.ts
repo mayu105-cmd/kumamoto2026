@@ -1,5 +1,6 @@
 import { EvacueeRecord, AdminUser } from '../types';
 import { generateInitialMockData } from './mockData';
+import { enqueueOfflineAction } from './offlineQueue';
 
 const EVACUEES_STORAGE_KEY = 'kumamoto_evacuees_v1';
 const AUTH_STORAGE_KEY = 'kumamoto_admin_auth_v1';
@@ -53,8 +54,12 @@ export function resetToInitialMockData(): EvacueeRecord[] {
 
 /**
  * 避難者レコードの新規追加
+ * オフライン時はキューに積んでローカル保存も行う
  */
 export function addEvacueeRecord(record: EvacueeRecord): void {
+  if (!navigator.onLine) {
+    enqueueOfflineAction({ type: 'add', payload: record });
+  }
   const records = loadEvacueeRecords();
   // 既存の同じ施設・区画があれば上書きまたは置き換え
   const filtered = records.filter(r => !(r.facilityId === record.facilityId && r.slotNumber === record.slotNumber));
@@ -64,8 +69,12 @@ export function addEvacueeRecord(record: EvacueeRecord): void {
 
 /**
  * 避難者レコードの更新
+ * オフライン時はキューに積んでローカル保存も行う
  */
 export function updateEvacueeRecord(updatedRecord: EvacueeRecord): void {
+  if (!navigator.onLine) {
+    enqueueOfflineAction({ type: 'update', payload: updatedRecord });
+  }
   const records = loadEvacueeRecords();
   const index = records.findIndex(r => r.id === updatedRecord.id);
   if (index !== -1) {
@@ -76,8 +85,12 @@ export function updateEvacueeRecord(updatedRecord: EvacueeRecord): void {
 
 /**
  * 避難者レコードの削除（退去・チェックアウト）
+ * オフライン時はキューに積んでローカル保存も行う
  */
 export function deleteEvacueeRecord(id: string): void {
+  if (!navigator.onLine) {
+    enqueueOfflineAction({ type: 'delete', payload: id });
+  }
   const records = loadEvacueeRecords();
   const filtered = records.filter(r => r.id !== id);
   saveEvacueeRecords(filtered);
