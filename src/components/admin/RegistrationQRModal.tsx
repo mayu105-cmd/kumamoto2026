@@ -166,3 +166,4 @@ export const RegistrationQRModal: React.FC<RegistrationQRModalProps> = ({
     </div>
   );
 };
+

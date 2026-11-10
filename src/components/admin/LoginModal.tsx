@@ -139,7 +139,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   <div className="text-[10px] text-slate-500 font-mono">ID: {u.username}</div>
                 </div>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">
-                  {u.role === 'admin' ? '全体管理' : u.role === 'medical' ? '医療班' : '現地'}
+                  {u.role === 'admin' ? '全体管理' : '現地'}
                 </span>
               </button>
             ))}

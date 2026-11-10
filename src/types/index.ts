@@ -120,7 +120,7 @@ export interface AdminUser {
   id: string;
   username: string;
   name: string;
-  role: 'admin' | 'staff' | 'medical';
+  role: 'admin' | 'staff';
   facilityId?: FacilityId | 'all';
 }
 

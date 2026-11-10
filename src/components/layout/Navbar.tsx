@@ -129,7 +129,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {adminUser.name}
                   </span>
                   <span className="text-[10px] text-slate-500">
-                    {adminUser.role === 'admin' ? '行政本部 管理者' : adminUser.role === 'medical' ? '医療支援班' : '避難所スタッフ'}
+                    {adminUser.role === 'admin' ? '行政本部 管理者' : '避難所スタッフ'}
                   </span>
                 </div>
 

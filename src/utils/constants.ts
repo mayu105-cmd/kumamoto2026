@@ -102,13 +102,6 @@ export const DEMO_ADMIN_USERS = [
     name: '熊本競輪場現地救護スタッフ',
     role: 'staff' as const,
     facilityId: 'keirin' as const
-  },
-  {
-    id: 'medic-01',
-    username: 'dmat_kumamoto',
-    name: '熊本DMAT 医療班長',
-    role: 'medical' as const,
-    facilityId: 'all' as const
   }
 ];
 
