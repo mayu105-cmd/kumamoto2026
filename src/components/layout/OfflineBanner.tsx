@@ -75,3 +75,4 @@ export default function OfflineBanner({ onFlushQueue }: OfflineBannerProps) {
     </div>
   );
 }
+

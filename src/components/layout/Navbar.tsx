@@ -1,7 +1,8 @@
-import React from 'react';
-import { LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { LogOut, QrCode } from 'lucide-react';
 import { AdminUser, FacilityId } from '../../types';
 import { FACILITIES } from '../../utils/constants';
+import { RegistrationQRModal } from '../admin/RegistrationQRModal';
 
 interface NavbarProps {
   currentTab: 'evacuee_register' | 'evacuee_pass' | 'admin_dashboard' | 'admin_parking' | 'admin_list' | 'admin_data';
@@ -27,8 +28,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectFacility,
 }) => {
   const isAdminView = currentTab.startsWith('admin_');
+  const [isQROpen, setIsQROpen] = useState(false);
 
   return (
+    <>
     <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
       {/* 災害緊急ヘッダー帯 */}
       <div className="bg-blue-900 text-white text-xs py-1 px-4">
@@ -103,6 +106,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="受付証を閉じてしまった場合に入力して再表示"
             >
               <span>受付証の再検索</span>
+            </button>
+
+            {/* 登録用QRコードボタン */}
+            <button
+              onClick={() => setIsQROpen(true)}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-blue-700 hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors"
+              title="避難所掲示用 登録QRコードを表示・印刷"
+            >
+              <QrCode className="w-3.5 h-3.5" />
+              <span>登録QR</span>
             </button>
 
             {/* 区切り線 */}
@@ -212,6 +225,14 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       )}
     </header>
+
+    {/* 登録用QRコードモーダル */}
+    <RegistrationQRModal
+      isOpen={isQROpen}
+      onClose={() => setIsQROpen(false)}
+      selectedFacility={selectedFacility}
+    />
+    </>
   );
 };
 

@@ -4,6 +4,7 @@ import { FACILITIES, AID_NEEDS_OPTIONS } from '../../utils/constants';
 import { evaluateEvacueeRisk, isPatrolNeeded } from '../../utils/riskAssessment';
 import { needsCheckinReminder, generateMailtoLink, generateCheckinUrl, hoursSinceLastCheckin } from '../../utils/checkinReminder';
 import { BatchEmailModal } from './BatchEmailModal';
+import { RegistrationQRModal } from './RegistrationQRModal';
 
 interface DashboardProps {
   records: EvacueeRecord[];
@@ -30,6 +31,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [reminderFilter, setReminderFilter] = useState<'all' | 'needs_send'>('needs_send');
   const [isBatchEmailOpen, setIsBatchEmailOpen] = useState(false);
   const [batchSuccessMessage, setBatchSuccessMessage] = useState<string | null>(null);
+  const [isRegQROpen, setIsRegQROpen] = useState(false);
   // 現在選択中の施設のレコード
   const facilityRecords = records.filter(r => r.facilityId === selectedFacility);
   const totalCapacity = FACILITIES[selectedFacility].totalCapacity; // 150
@@ -121,6 +123,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* ダッシュボードヘッダー */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-black text-slate-900">{FACILITIES[selectedFacility].name}</h2>
+          <p className="text-xs text-slate-500 mt-0.5">避難者管理ダッシュボード</p>
+        </div>
+        <button
+          onClick={() => setIsRegQROpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition-colors"
+        >
+          <span className="text-base leading-none">📲</span>
+          避難者登録QRコード
+        </button>
+      </div>
+
       {/* 熊本地震教訓：エコノミークラス症候群警戒トップアラート */}
       {(economyWarningCount > 0 || criticalCount > 0) && (
         <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-pulse">
@@ -571,6 +588,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
         onClose={() => setIsBatchEmailOpen(false)}
         targetRecords={reminderNeededRecords.length > 0 ? reminderNeededRecords : emailRegisteredRecords}
         onBatchSendSuccess={handleBatchSendSuccess}
+      />
+
+      {/* 避難者登録用QRコードモーダル */}
+      <RegistrationQRModal
+        isOpen={isRegQROpen}
+        onClose={() => setIsRegQROpen(false)}
+        selectedFacility={selectedFacility}
       />
     </div>
   );

@@ -54,3 +54,4 @@ export function flushOfflineQueue(
   onFlush(queue);
   clearOfflineQueue();
 }
+
