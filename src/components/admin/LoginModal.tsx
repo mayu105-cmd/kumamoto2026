@@ -128,11 +128,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 key={u.id}
                 type="button"
                 onClick={() => handleSelectDemoUser(u)}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-colors border ${
-                  username === u.username
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-colors border ${username === u.username
                     ? 'bg-blue-50 border-blue-300 text-blue-900 font-bold'
                     : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
+                  }`}
               >
                 <div>
                   <div className="font-semibold">{u.name}</div>
